@@ -50,19 +50,21 @@ impl Rustysearch {
     /// If the stats do not exist, it makes returns data with the current
     /// version of ``rustysearch`` & zero docs (used in scoring).
     ///
-    pub fn read_stats(&self) -> Stats {
+    pub fn read_stats(&self) -> std::io::Result<Stats> {
+        let mut stats: Stats;
+
         if !Path::new(&self.stats_path).exists() {
-            let stats = Stats {
+            stats = Stats {
                 version: String::from("0.1.0"),
                 total_docs: 0,
             };
-            return stats;
+        } else {
+            // Read the stats file
+            let stats_json = fs::read_to_string(&self.stats_path).expect("Unable to read stats");
+            stats = serde_json::from_str(&stats_json).unwrap();
         }
 
-        // Read the stats file
-        let stats_json = fs::read_to_string(&self.stats_path).expect("Unable to read stats");
-        let stats: Stats = serde_json::from_str(&stats_json).unwrap();
-        return stats;
+        Ok(stats)
     }
 
     /// **Writes the index-wide stats**
@@ -75,10 +77,11 @@ impl Rustysearch {
     ///        'total_docs': 25,
     ///    }
     /// 
-    pub fn write_stats(&self, new_stats: Stats) {
+    pub fn write_stats(&self, new_stats: Stats) -> std::io::Result<()> {
         // Write new_stats as json to stats_path
         let new_stats_json = serde_json::to_string(&new_stats).unwrap();
-        fs::write(&self.stats_path, new_stats_json).expect("Unable to write stats");
+        fs::write(&self.stats_path, new_stats_json)?;
+        Ok(())
     }
 
     /// **Increments the total number of documents the index is aware of**
@@ -87,15 +90,15 @@ impl Rustysearch {
     /// of the indexing process.
     /// 
     pub fn increment_total_docs(&self) {
-        let mut current_stats = self.read_stats();
+        let mut current_stats = self.read_stats().unwrap();
         current_stats.total_docs += 1;
-        self.write_stats(current_stats);
+        self.write_stats(current_stats).unwrap();
     }
 
     /// Returns the total number of documents the index is aware of
     /// 
     pub fn get_total_docs(&self) -> i32 {
-        let stats = self.read_stats();
+        let stats = self.read_stats().unwrap();
         return stats.total_docs;
     }
 
