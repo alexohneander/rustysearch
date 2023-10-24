@@ -51,7 +51,7 @@ impl Rustysearch {
     /// version of ``rustysearch`` & zero docs (used in scoring).
     ///
     pub fn read_stats(&self) -> std::io::Result<Stats> {
-        let mut stats: Stats;
+        let stats: Stats;
 
         if !Path::new(&self.stats_path).exists() {
             stats = Stats {
