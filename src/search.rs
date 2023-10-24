@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::types::Stats;
+use crate::{types::Stats, analyze::tokenizer::Tokenizer};
 
 pub struct Rustysearch {
     base_directory: String,
@@ -92,10 +92,18 @@ impl Rustysearch {
         self.write_stats(current_stats);
     }
 
-    /// **Returns the total number of documents the index is aware of**
+    /// Returns the total number of documents the index is aware of
     /// 
     pub fn get_total_docs(&self) -> i32 {
         let stats = self.read_stats();
         return stats.total_docs;
+    }
+
+    /// Given a string (``blob``) of text, this will return a Vector of tokens.
+    /// 
+    pub fn make_tokens(&self, blob: &str) -> Vec<String> {
+        let tokenizer = Tokenizer::new(blob, vec![], None);
+        let tokens = tokenizer.split_into_words();
+        return tokens;
     }
 }
