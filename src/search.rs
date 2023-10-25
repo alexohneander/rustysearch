@@ -173,11 +173,26 @@ impl Rustysearch {
     ///
     pub fn make_segment_name(&self, term: &str) -> String {
         let term = &self.hash_name(term, 6);
-        
+
         let index_file_name = format!("{}.index", term);
         let segment_path = Path::new(&self.index_path).join(index_file_name);
         let segment_path = segment_path.to_str().unwrap().to_string();
 
+        fs::write(&segment_path, "").expect("Unable to create segment file");
+
         return segment_path;
+    }
+
+    /// Given a ``line`` from the segment file, this returns the term & its info.
+    ///
+    /// The term info is stored as serialized JSON. The default separator
+    /// between the term & info is the ``\t`` character, which would never
+    /// appear in a term due to the way tokenization is done.
+    ///
+    pub fn parse_record(&self, line: &str) -> (String, String) {
+        let mut parts = line.trim().split("\t");
+        let term = parts.next().unwrap().to_string();
+        let info = parts.next().unwrap().to_string();
+        (term, info)
     }
 }

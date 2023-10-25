@@ -96,6 +96,18 @@ mod tests {
         assert_eq!(segment_name, "/tmp/rustysearch_makesegmentname/index/5d4140.index");
     }
 
+    #[test]
+    fn test_parse_record(){
+        let search = Rustysearch::new("/tmp/rustysearch_parserecord");
+        search.setup();
+
+        let line = "my_term\t{\"frequency\": 100}";
+        let (term, info) = search.parse_record(line);
+
+        assert_eq!(term, "my_term");
+        assert_eq!(info, "{\"frequency\": 100}");
+    }
+
     // Helper function to clean up the stats file
     fn clean_stats(tmp_path: &str){
         let search = Rustysearch::new(tmp_path);
