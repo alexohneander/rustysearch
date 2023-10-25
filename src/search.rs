@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{fs, path::Path, collections::HashMap, cmp::min};
 
 use crate::{types::Stats, analyze::tokenizer::Tokenizer};
 
@@ -108,5 +108,30 @@ impl Rustysearch {
         let tokenizer = Tokenizer::new(blob, vec![], None);
         let tokens = tokenizer.split_into_words();
         return tokens;
+    }
+
+    /// **Converts a iterable of ``tokens`` into n-grams**
+    /// 
+    /// This assumes front grams (all grams made starting from the left side
+    /// of the token).
+    ///
+    /// Optionally accepts a ``min_gram`` parameter, which takes an integer &
+    /// controls the minimum gram length. Default is ``3``.
+    ///
+    /// Optionally accepts a ``max_gram`` parameter, which takes an integer &
+    /// controls the maximum gram length. Default is ``6``.
+    ///
+    pub fn make_ngrams(&self, tokens: Vec<String>, min_gram: usize, max_gram: usize) -> HashMap<String, Vec<usize>> {
+        let mut terms: HashMap<String, Vec<usize>> = HashMap::new();
+    
+        for (position, token) in tokens.iter().enumerate() {
+            for window_length in min_gram..min(max_gram + 1, token.len() + 1) {
+                // Assuming "front" grams.
+                let gram = &token[..window_length];
+                terms.entry(gram.to_string()).or_insert(Vec::new()).push(position);
+            }
+        }
+    
+        return terms;
     }
 }

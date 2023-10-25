@@ -63,6 +63,18 @@ mod tests {
         assert_eq!(total_docs, 1);
     }
 
+    #[test]
+    fn test_make_ngrams(){
+        let search = Rustysearch::new("/tmp/rustysearch");
+        search.setup();
+
+        let tokens = vec!["hello".to_string(), "world".to_string()];
+        let terms = search.make_ngrams(tokens, 3, 6);
+
+        assert_eq!(terms["hel"].len(), 1);
+    }
+
+    // Helper function to clean up the stats file
     fn clean_stats(){
         let search = Rustysearch::new("/tmp/rustysearch");
         search.setup();
