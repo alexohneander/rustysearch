@@ -12,7 +12,8 @@ mod tests {
         assert_eq!(stats.version, "0.1.0");
         assert_eq!(stats.total_docs, 0);
 
-        let search = Rustysearch::new("/tmp/rustysearch");
+        let tmp_path = "/tmp/rustysearch_writenewstats";
+        let search = Rustysearch::new(&tmp_path);
         search.setup();
 
         search.write_stats(stats).unwrap();
@@ -20,10 +21,11 @@ mod tests {
 
     #[test]
     fn test_read_stats(){
-        let search = Rustysearch::new("/tmp/rustysearch");
+        let tmp_path = "/tmp/rustysearch_readstats";
+        let search = Rustysearch::new(&tmp_path);
         search.setup();
 
-        clean_stats();
+        clean_stats(tmp_path);
 
         let stats = search.read_stats().unwrap();
         assert_eq!(stats.version, "0.1.0");
@@ -32,10 +34,11 @@ mod tests {
 
     #[test]
     fn test_increment_total_docs(){
-        let search = Rustysearch::new("/tmp/rustysearch");
+        let tmp_path = "/tmp/rustysearch_incrementtotaldocs";
+        let search = Rustysearch::new(&tmp_path);
         search.setup();
 
-        clean_stats();
+        clean_stats(tmp_path);
 
         let stats = search.read_stats().unwrap();
         assert_eq!(stats.total_docs, 0);
@@ -47,10 +50,11 @@ mod tests {
 
     #[test]
     fn test_get_total_docs(){
-        let search = Rustysearch::new("/tmp/rustysearch");
+        let tmp_path = "/tmp/rustysearch_gettotaldocs";
+        let search = Rustysearch::new(&tmp_path);
         search.setup();
 
-        clean_stats();
+        clean_stats(tmp_path);
 
         let stats = search.read_stats().unwrap();
         assert_eq!(stats.total_docs, 0);
@@ -65,7 +69,7 @@ mod tests {
 
     #[test]
     fn test_make_ngrams(){
-        let search = Rustysearch::new("/tmp/rustysearch");
+        let search = Rustysearch::new("/tmp/rustysearch_makengrams");
         search.setup();
 
         let tokens = vec!["hello".to_string(), "world".to_string()];
@@ -75,8 +79,8 @@ mod tests {
     }
 
     // Helper function to clean up the stats file
-    fn clean_stats(){
-        let search = Rustysearch::new("/tmp/rustysearch");
+    fn clean_stats(tmp_path: &str){
+        let search = Rustysearch::new(tmp_path);
         search.setup();
 
         let new_stats = Stats{
