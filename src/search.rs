@@ -1,6 +1,6 @@
-use std::{fs, path::Path, collections::HashMap, cmp::min};
+use std::{cmp::min, collections::HashMap, fs, path::Path};
 
-use crate::{types::Stats, analyze::tokenizer::Tokenizer};
+use crate::{analyze::tokenizer::Tokenizer, types::Stats};
 
 pub struct Rustysearch {
     base_directory: String,
@@ -76,7 +76,7 @@ impl Rustysearch {
     ///        'version': '1.0.0',
     ///        'total_docs': 25,
     ///    }
-    /// 
+    ///
     pub fn write_stats(&self, new_stats: Stats) -> std::io::Result<()> {
         // Write new_stats as json to stats_path
         let new_stats_json = serde_json::to_string(&new_stats).unwrap();
@@ -88,7 +88,7 @@ impl Rustysearch {
     ///
     /// This is important for scoring reasons & is typically called as part
     /// of the indexing process.
-    /// 
+    ///
     pub fn increment_total_docs(&self) {
         let mut current_stats = self.read_stats().unwrap();
         current_stats.total_docs += 1;
@@ -96,14 +96,14 @@ impl Rustysearch {
     }
 
     /// Returns the total number of documents the index is aware of
-    /// 
+    ///
     pub fn get_total_docs(&self) -> i32 {
         let stats = self.read_stats().unwrap();
         return stats.total_docs;
     }
 
     /// Given a string (``blob``) of text, this will return a Vector of tokens.
-    /// 
+    ///
     pub fn make_tokens(&self, blob: &str) -> Vec<String> {
         let tokenizer = Tokenizer::new(blob, vec![], None);
         let tokens = tokenizer.split_into_words();
@@ -111,7 +111,7 @@ impl Rustysearch {
     }
 
     /// **Converts a iterable of ``tokens`` into n-grams**
-    /// 
+    ///
     /// This assumes front grams (all grams made starting from the left side
     /// of the token).
     ///
@@ -121,17 +121,63 @@ impl Rustysearch {
     /// Optionally accepts a ``max_gram`` parameter, which takes an integer &
     /// controls the maximum gram length. Default is ``6``.
     ///
-    pub fn make_ngrams(&self, tokens: Vec<String>, min_gram: usize, max_gram: usize) -> HashMap<String, Vec<usize>> {
+    pub fn make_ngrams(
+        &self,
+        tokens: Vec<String>,
+        min_gram: usize,
+        max_gram: usize,
+    ) -> HashMap<String, Vec<usize>> {
         let mut terms: HashMap<String, Vec<usize>> = HashMap::new();
-    
+
         for (position, token) in tokens.iter().enumerate() {
             for window_length in min_gram..min(max_gram + 1, token.len() + 1) {
                 // Assuming "front" grams.
                 let gram = &token[..window_length];
-                terms.entry(gram.to_string()).or_insert(Vec::new()).push(position);
+                terms
+                    .entry(gram.to_string())
+                    .or_insert(Vec::new())
+                    .push(position);
             }
         }
-    
+
         return terms;
+    }
+
+    /// Given a ``term``, hashes it & returns a string of the first N letters
+    ///
+    /// Optionally accepts a ``length`` parameter, which takes an integer &
+    /// controls how much of the hash is returned. Default is ``6``.
+    ///
+    /// This is usefully when writing files to the file system, as it helps
+    /// us keep from putting too many files in a given directory (~32K max
+    /// with the default).
+    ///
+    pub fn hash_name(&self, term: &str, length: usize) -> String {
+        // Make sure it's ASCII.
+        let term = term.to_ascii_lowercase();
+
+        // We hash & slice the term to get a small-ish number of fields
+        // and good distribution between them.
+        let hash = md5::compute(&term);
+        let hashed = format!("{:x}", hash);
+
+        // Cut string after length characters
+        let hashed = &hashed[..length];
+
+        return hashed.to_string();
+    }
+
+    /// Given a ``term``, creates a segment filename based on the hash of the term.
+    ///
+    /// Returns the full path to the segment.
+    ///
+    pub fn make_segment_name(&self, term: &str) -> String {
+        let term = &self.hash_name(term, 6);
+        
+        let index_file_name = format!("{}.index", term);
+        let segment_path = Path::new(&self.index_path).join(index_file_name);
+        let segment_path = segment_path.to_str().unwrap().to_string();
+
+        return segment_path;
     }
 }

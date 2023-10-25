@@ -78,6 +78,24 @@ mod tests {
         assert_eq!(terms["hel"].len(), 1);
     }
 
+    #[test]
+    fn test_hash_name(){
+        let search = Rustysearch::new("/tmp/rustysearch_hashname");
+        search.setup();
+
+        let hash = search.hash_name("hello", 6);
+        assert_eq!(hash, "5d4140");
+    }
+
+    #[test]
+    fn test_make_segment_name(){
+        let search = Rustysearch::new("/tmp/rustysearch_makesegmentname");
+        search.setup();
+
+        let segment_name = search.make_segment_name("hello");
+        assert_eq!(segment_name, "/tmp/rustysearch_makesegmentname/index/5d4140.index");
+    }
+
     // Helper function to clean up the stats file
     fn clean_stats(tmp_path: &str){
         let search = Rustysearch::new(tmp_path);
