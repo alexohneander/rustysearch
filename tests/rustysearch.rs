@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use rustysearch::{types::Stats, search::Rustysearch};
+    use rustysearch::{search::Rustysearch, types::Stats};
 
     #[test]
-    fn test_write_new_stats(){
-        let stats = Stats{
+    fn test_write_new_stats() {
+        let stats = Stats {
             version: String::from("0.1.0"),
             total_docs: 0,
         };
@@ -20,7 +20,7 @@ mod tests {
     }
 
     #[test]
-    fn test_read_stats(){
+    fn test_read_stats() {
         let tmp_path = "/tmp/rustysearch_readstats";
         let search = Rustysearch::new(&tmp_path);
         search.setup();
@@ -33,7 +33,7 @@ mod tests {
     }
 
     #[test]
-    fn test_increment_total_docs(){
+    fn test_increment_total_docs() {
         let tmp_path = "/tmp/rustysearch_incrementtotaldocs";
         let search = Rustysearch::new(&tmp_path);
         search.setup();
@@ -49,7 +49,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_total_docs(){
+    fn test_get_total_docs() {
         let tmp_path = "/tmp/rustysearch_gettotaldocs";
         let search = Rustysearch::new(&tmp_path);
         search.setup();
@@ -68,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    fn test_make_ngrams(){
+    fn test_make_ngrams() {
         let search = Rustysearch::new("/tmp/rustysearch_makengrams");
         search.setup();
 
@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn test_hash_name(){
+    fn test_hash_name() {
         let search = Rustysearch::new("/tmp/rustysearch_hashname");
         search.setup();
 
@@ -88,16 +88,19 @@ mod tests {
     }
 
     #[test]
-    fn test_make_segment_name(){
+    fn test_make_segment_name() {
         let search = Rustysearch::new("/tmp/rustysearch_makesegmentname");
         search.setup();
 
         let segment_name = search.make_segment_name("hello");
-        assert_eq!(segment_name, "/tmp/rustysearch_makesegmentname/index/5d4140.index");
+        assert_eq!(
+            segment_name,
+            "/tmp/rustysearch_makesegmentname/index/5d4140.index"
+        );
     }
 
     #[test]
-    fn test_parse_record(){
+    fn test_parse_record() {
         let search = Rustysearch::new("/tmp/rustysearch_parserecord");
         search.setup();
 
@@ -108,12 +111,19 @@ mod tests {
         assert_eq!(info, "{\"frequency\": 100}");
     }
 
+    #[test]
+    fn test_make_tokens() {
+        let search = Rustysearch::new("/tmp/rustysearch");
+        let tokens = search.make_tokens("Hello, world!");
+        assert_eq!(tokens, vec!["hello", "world"]);
+    }
+
     // Helper function to clean up the stats file
-    fn clean_stats(tmp_path: &str){
+    fn clean_stats(tmp_path: &str) {
         let search = Rustysearch::new(tmp_path);
         search.setup();
 
-        let new_stats = Stats{
+        let new_stats = Stats {
             version: String::from("0.1.0"),
             total_docs: 0,
         };
