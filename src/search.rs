@@ -1,6 +1,13 @@
-use std::{cmp::min, collections::HashMap, fs, path::Path};
+use std::{
+    cmp::min,
+    collections::{HashMap, HashSet},
+    fs,
+    io::{Read, Write},
+    path::Path,
+};
+use tempfile::NamedTempFile;
 
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 
 use crate::{analyze::tokenizer::Tokenizer, types::Stats};
 
@@ -198,10 +205,106 @@ impl Rustysearch {
         (term, info)
     }
 
-    ///  Given a ``term`` and a dict of ``term_info``, creates a line for
+    /// Given a ``term`` and a dict of ``term_info``, creates a line for
     /// writing to the segment file.
-    /// 
+    ///
     pub fn make_record(&self, term: &str, term_info: &Value) -> String {
         format!("{}\t{}\n", term, json!(term_info).to_string())
+    }
+
+    /// Takes existing ``orig_info`` & ``new_info`` dicts & combines them
+    /// intelligently.
+    ///
+    /// Used for updating term_info within the segments.
+    ///
+    pub fn update_term_info(&self, orig_info: &mut Value, new_info: &Value) -> Value {
+        for (doc_id, positions) in new_info.as_object().unwrap().iter() {
+            if !orig_info.as_object().unwrap().contains_key(doc_id) {
+                orig_info[doc_id] = positions.clone();
+            } else {
+                let mut orig_positions: HashSet<_> = orig_info[doc_id]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|v| v.as_str().unwrap().to_string())
+                    .collect();
+                let new_positions: HashSet<_> = positions
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|v| v.as_str().unwrap().to_string())
+                    .collect();
+
+                orig_positions.extend(new_positions);
+
+                orig_info[doc_id] = Value::Array(
+                    orig_positions
+                        .iter()
+                        .map(|v| Value::String(v.clone()))
+                        .collect(),
+                );
+            }
+        }
+
+        return orig_info.to_owned();
+    }
+
+    /// Writes out new index data to disk.
+    /// 
+    /// Takes a ``term`` string & ``term_info`` dict. It will
+    /// rewrite the segment in alphabetical order, adding in the data
+    /// where appropriate.
+    /// 
+    /// Optionally takes an ``update`` parameter, which is a boolean &
+    /// determines whether the provided ``term_info`` should overwrite or
+    /// update the data in the segment. Default is ``False`` (overwrite).
+    /// 
+    pub fn save_segment(&self, term: &str, term_info: &Value, update: bool) -> bool {
+        let seg_name = &self.make_segment_name(term);
+        let mut new_seg_file = NamedTempFile::new().unwrap();
+        let mut written = false;
+
+        if !Path::new(&seg_name).exists() {
+            fs::write(&seg_name, "").unwrap();
+        }
+
+        let mut seg_file = fs::OpenOptions::new().read(true).open(&seg_name).unwrap();
+        let mut buf = String::new();
+        seg_file.read_to_string(&mut buf).unwrap();
+
+        for line in buf.lines() {
+            let (seg_term, seg_term_info) = self.parse_record(line);
+
+            if !written && seg_term > term.to_string() {
+                let new_line = self.make_record(term, term_info);
+                new_seg_file.write_all(new_line.as_bytes()).unwrap();
+                written = true;
+            } else if seg_term == term {
+                if update {
+                    let new_info = self.update_term_info(&mut json!(seg_term_info), term_info);
+                    let new_line = self.make_record(term, &new_info);
+                    new_seg_file.write_all(new_line.as_bytes()).unwrap();
+                } else {
+                    let line = self.make_record(term, term_info);
+                    new_seg_file.write_all(line.as_bytes()).unwrap();
+                }
+
+                written = true;
+            }
+
+            new_seg_file.write_all(line.as_bytes()).unwrap();
+        }
+
+        if !written {
+            let line = self.make_record(term, term_info);
+            new_seg_file.write_all(line.as_bytes()).unwrap();
+        }
+
+        fs::rename(&new_seg_file.path(), &seg_name).unwrap();
+
+        new_seg_file.flush().unwrap();
+        // new_seg_file.close().unwrap();
+
+        return true;
     }
 }

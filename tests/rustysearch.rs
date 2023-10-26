@@ -132,6 +132,50 @@ mod tests {
         assert_eq!(record, "hello world\t{\"frequency\":100,\"idf\":1.5}\n");
     }
 
+    #[test]
+    fn test_update_term_info() {
+        let mut orig_info = json!({
+            "doc1": ["1", "2"],
+            "doc2": ["3", "4"]
+        });
+
+        let new_info = json!({
+            "doc3": ["1", "2"]
+        });
+
+        let expected_result = json!({
+            "doc1": ["1", "2"],
+            "doc2": ["3", "4"],
+            "doc3": ["1", "2"]
+        });
+        let search = Rustysearch::new("/tmp/rustysearch");
+        let result = search.update_term_info(&mut orig_info, &new_info);
+
+        assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn test_save_segment() {
+        let search = Rustysearch::new("/tmp/rustysearch_save_segment");
+        search.setup();
+        
+        let term = "rust";
+        let term_info = json!({"doc1": ["1", "5"], "doc2": ["2", "6"]});
+
+        // Test saving a new segment
+        let result = search.save_segment(term, &term_info, false);
+        assert_eq!(result, true);
+
+        // Test updating an existing segment
+        let new_term_info = json!({"doc1": ["1", "5", "10"], "doc3": ["3", "7"]});
+        let result = search.save_segment(term, &new_term_info, true);
+        assert_eq!(result, true);
+
+        // Test overwriting an existing segment
+        let result = search.save_segment(term, &term_info, false);
+        assert_eq!(result, true);
+    }
+
     // Helper function to clean up the stats file
     fn clean_stats(tmp_path: &str) {
         let search = Rustysearch::new(tmp_path);
