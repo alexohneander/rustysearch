@@ -2,11 +2,11 @@ name: Coverage
 
 on:
   push:
-    branches:
-      - develop
-  pull_request_target:
-    branches:
-      - develop
+#     branches:
+#       - develop
+#   pull_request_target:
+#     branches:
+#       - develop
 
 env:
   CARGO_TERM_COLOR: always
