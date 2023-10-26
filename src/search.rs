@@ -1,5 +1,7 @@
 use std::{cmp::min, collections::HashMap, fs, path::Path};
 
+use serde_json::{Value, json};
+
 use crate::{analyze::tokenizer::Tokenizer, types::Stats};
 
 pub struct Rustysearch {
@@ -194,5 +196,12 @@ impl Rustysearch {
         let term = parts.next().unwrap().to_string();
         let info = parts.next().unwrap().to_string();
         (term, info)
+    }
+
+    ///  Given a ``term`` and a dict of ``term_info``, creates a line for
+    /// writing to the segment file.
+    /// 
+    pub fn make_record(&self, term: &str, term_info: &Value) -> String {
+        format!("{}\t{}\n", term, json!(term_info).to_string())
     }
 }

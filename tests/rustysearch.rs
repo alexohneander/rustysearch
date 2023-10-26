@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use rustysearch::{search::Rustysearch, types::Stats};
+    use serde_json::json;
 
     #[test]
     fn test_write_new_stats() {
@@ -116,6 +117,19 @@ mod tests {
         let search = Rustysearch::new("/tmp/rustysearch");
         let tokens = search.make_tokens("Hello, world!");
         assert_eq!(tokens, vec!["hello", "world"]);
+    }
+
+    #[test]
+    fn test_make_record() {
+        let search = Rustysearch::new("/tmp/rustysearch");
+        let term = "hello world";
+        let term_info = json!({
+            "frequency": 100,
+            "idf": 1.5,
+        });
+
+        let record = search.make_record(term, &term_info);
+        assert_eq!(record, "hello world\t{\"frequency\":100,\"idf\":1.5}\n");
     }
 
     // Helper function to clean up the stats file
