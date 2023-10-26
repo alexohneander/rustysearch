@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use rustysearch::{analyze::tokenizer::Tokenizer};
+    use rustysearch::analyze::tokenizer::Tokenizer;
 
     #[test]
     fn test_split_into_words() {
