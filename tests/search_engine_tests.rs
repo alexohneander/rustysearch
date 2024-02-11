@@ -13,4 +13,17 @@ mod tests {
         assert_eq!(search_engine.posts().len(), 1);
         assert_eq!(search_engine.number_of_documents(), 1);
     }
+
+    #[test]
+    fn test_bulk_index() {
+        let mut search_engine = SearchEngine::new(1.2, 0.75);
+
+        search_engine.bulk_index(vec![
+            ("https://www.rust-lang.org/", "Rust Programming Language"),
+            ("https://www.wikipedia.com/", "Rust Programming Language"),
+        ]);
+
+        assert_eq!(search_engine.posts().len(), 2);
+        assert_eq!(search_engine.number_of_documents(), 2);
+    }
 }

@@ -79,6 +79,12 @@ impl SearchEngine {
         }
     }
 
+    pub fn bulk_index(&mut self, documents: Vec<(&str, &str)>) {
+        for (url, content) in documents {
+            self.index(url, content);
+        }
+    }
+
     pub fn get_urls(&self, keyword: &str) -> HashMap<String, i32> {
         let keyword = normalize_string(keyword);
         self.index.get(&keyword).cloned().unwrap_or(HashMap::new())
