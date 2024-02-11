@@ -1,13 +1,20 @@
-use rustysearch::search::engine::SearchEngine;
+use axum::{
+    routing::get,
+    Router,
+};
 
-fn main() {
-    let mut engine = SearchEngine::new(1.5, 0.75);
-    engine.index("https://www.rust-lang.org/", "Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety.");
-    engine.index("https://en.wikipedia.org/wiki/Rust_(programming_language)", "Rust is a multi-paradigm system programming language focused on safety, especially safe concurrency.");
+#[tokio::main]
+async fn main() {
+    // initialize tracing
+    tracing_subscriber::fmt::init();
 
-    let query = "Rust programming language threads";
-    let results = engine.search(query);
-    for (url, score) in results {
-        println!("{}: {}", url, score);
-    }
+    // build our application with a route
+    let app = Router::new()
+        // `GET /` goes to `root`
+        .route("/", get(rustysearch::handler::hello::say_hello));
+
+    // run our app with hyper, listening globally on port 3000
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
+
