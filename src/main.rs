@@ -9,6 +9,7 @@ async fn main() {
 
     // initialize our search engine
     let mut search_engine = SearchEngine::new(1.5, 0.75);
+    search_engine.index("https://www.rust-lang.org/", "Rust Programming Language");
 
     // build our application with a route
     let app = Router::new()
