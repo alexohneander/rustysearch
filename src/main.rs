@@ -38,6 +38,7 @@ async fn main() -> std::io::Result<()> {
                 "/search/index/number_of_documents",
                 web::get().to(search::get_number_of_documents),
             )
+            .route("/search", web::get().to(search::search))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
