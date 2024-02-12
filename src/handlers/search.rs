@@ -1,15 +1,15 @@
 use actix_web::{web, HttpResponse, Responder};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::types::app_state::AppStateWithSearchEngine;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AddDocumentRequest {
-    url: String,
-    content: String,
+    pub url: String,
+    pub content: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct QueryRequest {
     query: String,
 }
