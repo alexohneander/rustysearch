@@ -4,7 +4,7 @@ mod tests {
 
     #[test]
     fn test_search_engine() {
-        let mut search_engine = SearchEngine::new(1.2, 0.75);
+        let mut search_engine = SearchEngine::new(1.5, 0.75);
 
         search_engine.index("https://www.rust-lang.org/", "Rust Programming Language");
         let result = search_engine.search("Rust");
@@ -16,7 +16,7 @@ mod tests {
 
     #[test]
     fn test_bulk_index() {
-        let mut search_engine = SearchEngine::new(1.2, 0.75);
+        let mut search_engine = SearchEngine::new(1.5, 0.75);
 
         search_engine.bulk_index(vec![
             ("https://www.rust-lang.org/", "Rust Programming Language"),
