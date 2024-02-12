@@ -1,2 +1,3 @@
 pub mod search;
-pub mod handler;
+pub mod handlers;
+pub mod types;

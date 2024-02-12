@@ -13,6 +13,7 @@ pub fn normalize_string(input_string: &str) -> String {
     string_without_double_spaces.to_lowercase()
 }
 
+#[derive(Default, Debug, Clone)]
 pub struct SearchEngine {
     index: HashMap<String, HashMap<String, i32>>,
     documents: HashMap<String, String>,
