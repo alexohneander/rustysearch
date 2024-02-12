@@ -90,4 +90,9 @@ impl SearchEngine {
         let keyword = normalize_string(keyword);
         self.index.get(&keyword).cloned().unwrap_or(HashMap::new())
     }
+
+    pub fn debug_index(&self) {
+        log::debug!("Index: {:?}", self.index);
+        log::debug!("Documents: {:?}", self.documents);
+    }
 }
