@@ -24,11 +24,12 @@ async fn main() -> std::io::Result<()> {
         App::new()
             // Inject the search engine into the application state
             .app_data(app_state.clone())
+            
             // enable logger
             .wrap(Logger::default())
+
             .service(hello::say_hello)
-            .service(hello::echo)
-            .route("/hey", web::get().to(hello::manual_hello))
+
             // Search Routes
             .route(
                 "/search/index/document",
