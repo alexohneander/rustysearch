@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 use std::f64;
 
-pub fn update_url_scores(old: &mut HashMap<String, f64>, new: &HashMap<String, f64>) {
+fn update_url_scores(old: &mut HashMap<String, f64>, new: &HashMap<String, f64>) {
     for (url, score) in new {
         old.entry(url.to_string()).and_modify(|e| *e += score).or_insert(*score);
     }
 }
 
-pub fn normalize_string(input_string: &str) -> String {
+fn normalize_string(input_string: &str) -> String {
     let string_without_punc: String = input_string.chars().filter(|&c| !c.is_ascii_punctuation()).collect();
     let string_without_double_spaces: String = string_without_punc.split_whitespace().collect::<Vec<&str>>().join(" ");
     string_without_double_spaces.to_lowercase()
