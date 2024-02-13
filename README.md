@@ -4,6 +4,7 @@
 # RustySearch
 
 This project is a simple implementation of a search engine in Rust. It uses the BM25 algorithm for ranking documents.
+This project is a learning exercise and is not intended for production use.
 
 ### Features
 
