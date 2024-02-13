@@ -61,7 +61,7 @@ jobs:
 
       - id: coverage
         name: Generate Coverage Report
-        uses: alekitto/grcov@v0.2
+        uses: actions-rs/grcov@v0.1.5
 
       - id: upload
         name: Upload Coverage Report
