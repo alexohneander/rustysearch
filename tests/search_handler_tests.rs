@@ -81,4 +81,25 @@ mod tests {
         let resp = test::call_service(&app, req).await;
         assert!(resp.status() == 200);
     }
+
+    #[actix_web::test]
+    async fn test_debug_index() {
+        let search_engine = SearchEngine::new(1.5, 0.75);
+
+        let app_state = web::Data::new(AppStateWithSearchEngine {
+            search_engine: Mutex::new(search_engine.clone()),
+        });
+
+        let app = test::init_service(App::new()
+            .app_data(app_state.clone())
+            .route("/search/debug", web::get().to(search::debug_index))
+        ).await;
+
+        let req = test::TestRequest::get()
+            .uri("/search/debug")
+            .to_request();
+
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status() == 200);
+    }
 }

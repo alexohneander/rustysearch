@@ -38,7 +38,6 @@ fn normalize_string(input_string: &str) -> String {
 ///     println!("{} - Relevance Score: {}", url, score);
 /// }
 /// ```
-
 #[derive(Default, Debug, Clone)]
 pub struct SearchEngine {
     index: HashMap<String, HashMap<String, i32>>,
