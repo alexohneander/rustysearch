@@ -24,12 +24,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             // Inject the search engine into the application state
             .app_data(app_state.clone())
-            
             // enable logger
             .wrap(Logger::default())
-
+            // Hello Routes
             .service(hello::say_hello)
-
             // Search Routes
             .route(
                 "/search/index/document",
@@ -42,7 +40,7 @@ async fn main() -> std::io::Result<()> {
             .route("/search", web::get().to(search::search))
             .route("/search/debug", web::get().to(search::debug_index))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 4000))?
     .run()
     .await
 }

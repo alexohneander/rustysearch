@@ -6,6 +6,11 @@
 This project is a simple implementation of a search engine in Rust. It uses the BM25 algorithm for ranking documents.
 This project is a learning exercise and is not intended for production use.
 
+## Todo
+
+- [] Store index to Disk
+- [] Save multiple indecies
+
 ### Features
 
 - Indexing documents: The search engine maintains an index of documents, where each document is associated with a unique identifier.
