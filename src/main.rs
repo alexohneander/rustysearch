@@ -1,9 +1,11 @@
 use std::sync::Mutex;
 
 use actix_web::{middleware::Logger, web, App, HttpServer};
+use clap::Parser;
 use env_logger::Env;
 
 use rustysearch::{
+    cmd::arguments::Args,
     handlers::{hello, search},
     search::engine::SearchEngine,
     types::app_state::AppStateWithSearchEngine,
@@ -11,6 +13,8 @@ use rustysearch::{
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let args = Args::parse();
+
     // Initialize logger
     env_logger::init_from_env(Env::default().default_filter_or("debug"));
 
