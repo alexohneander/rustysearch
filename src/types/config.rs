@@ -1,3 +1,5 @@
+use std::fmt::Error;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -12,5 +14,9 @@ impl Config {
             http_addr: String::from("127.0.0.1:4000"),
             database_path: String::from("/tmp/rustysearch.db"),
         }
+    }
+
+    pub(crate) fn load_from_file(config_path: &str) -> Result<Config, Error> {
+        unimplemented!();
     }
 }

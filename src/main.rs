@@ -13,13 +13,16 @@ use rustysearch::{
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Get Command Line Arguments
     let args = Args::parse();
 
     // Initialize logger
     env_logger::init_from_env(Env::default().default_filter_or("debug"));
 
+    // Initialize the search engine
     let search_engine = SearchEngine::new(1.5, 0.75);
 
+    // Wrap the search engine in a Mutex and then in an AppState
     let app_state = web::Data::new(AppStateWithSearchEngine {
         search_engine: Mutex::new(search_engine.clone()),
     });
