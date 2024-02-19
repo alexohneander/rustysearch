@@ -17,7 +17,11 @@ async fn main() -> std::io::Result<()> {
     let args = Args::parse();
 
     // Initialize logger
-    env_logger::init_from_env(Env::default().default_filter_or("debug"));
+    if args.log_level != "" {
+        env_logger::init_from_env(Env::default().default_filter_or(args.log_level));
+    } else {
+        env_logger::init_from_env(Env::default().default_filter_or("info"));
+    }
 
     // Initialize the search engine
     let search_engine = SearchEngine::new(1.5, 0.75);

@@ -5,13 +5,13 @@ use clap::Parser;
 pub struct Args {
     /// Config file path
     #[arg(short, long, default_value = "/etc/rustysearch/config.json")]
-    config: String,
+    pub config_path: String,
 
     /// Change the log level
     #[arg(short = 'l', long, default_value = "info")]
-    loglevel: String,
+    pub log_level: String,
 
     /// Change Database path
     #[arg(short = 'D', long, default_value = "/tmp/rustysearch.db")]
-    database: String,
+    pub database_path: String,
 }
