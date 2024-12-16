@@ -8,7 +8,7 @@ This project is a learning exercise and is not intended for production use.
 
 ## Todo
 
-- [] Store index to Disk
+- [x] Store index to Disk
 - [] Save multiple indecies
 
 ### Features
