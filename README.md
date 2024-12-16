@@ -15,6 +15,7 @@ This project is a learning exercise and is not intended for production use.
 
 - Indexing documents: The search engine maintains an index of documents, where each document is associated with a unique identifier.
 - Searching: Given a query, the search engine returns the most relevant documents.
+- BTree: The index is saved as a BTreeMap on the hard disk and loaded from the hard disk into RAM when the system is started. 
 
 ### Usage
 
