@@ -3,7 +3,11 @@ mod tests {
     use std::sync::Mutex;
 
     use actix_web::{test, web, App};
-    use rustysearch::{handlers::search, search::engine::SearchEngine, types::app_state::AppStateWithSearchEngine};
+    use rustysearch::{
+        handlers::search,
+        search::engine::{remove_index_from_disk, SearchEngine},
+        types::app_state::AppStateWithSearchEngine,
+    };
 
     #[actix_web::test]
     async fn test_add_document_to_index() {
@@ -13,13 +17,11 @@ mod tests {
             search_engine: Mutex::new(search_engine.clone()),
         });
 
-        let app = test::init_service(App::new()
-            .app_data(app_state.clone())
-            .route(
-                "/search/index/document",
-                web::post().to(search::add_document_to_index),
-            )
-        ).await;
+        let app = test::init_service(App::new().app_data(app_state.clone()).route(
+            "/search/index/document",
+            web::post().to(search::add_document_to_index),
+        ))
+        .await;
 
         let data = search::AddDocumentRequest {
             url: "https://example.com".to_string(),
@@ -33,6 +35,8 @@ mod tests {
 
         let resp = test::call_service(&app, req).await;
         assert!(resp.status() == 201);
+
+        remove_index_from_disk();
     }
 
     #[actix_web::test]
@@ -44,13 +48,11 @@ mod tests {
             search_engine: Mutex::new(search_engine.clone()),
         });
 
-        let app = test::init_service(App::new()
-            .app_data(app_state.clone())
-            .route(
-                "/search/index/number_of_documents",
-                web::get().to(search::get_number_of_documents),
-            )
-        ).await;
+        let app = test::init_service(App::new().app_data(app_state.clone()).route(
+            "/search/index/number_of_documents",
+            web::get().to(search::get_number_of_documents),
+        ))
+        .await;
 
         let req = test::TestRequest::get()
             .uri("/search/index/number_of_documents")
@@ -58,6 +60,8 @@ mod tests {
 
         let resp = test::call_service(&app, req).await;
         assert!(resp.status() == 200);
+
+        remove_index_from_disk();
     }
 
     #[actix_web::test]
@@ -69,10 +73,12 @@ mod tests {
             search_engine: Mutex::new(search_engine.clone()),
         });
 
-        let app = test::init_service(App::new()
-            .app_data(app_state.clone())
-            .route("/search", web::get().to(search::search))
-        ).await;
+        let app = test::init_service(
+            App::new()
+                .app_data(app_state.clone())
+                .route("/search", web::get().to(search::search)),
+        )
+        .await;
 
         let req = test::TestRequest::get()
             .uri("/search?query=example")
@@ -80,6 +86,8 @@ mod tests {
 
         let resp = test::call_service(&app, req).await;
         assert!(resp.status() == 200);
+
+        remove_index_from_disk();
     }
 
     #[actix_web::test]
@@ -90,16 +98,19 @@ mod tests {
             search_engine: Mutex::new(search_engine.clone()),
         });
 
-        let app = test::init_service(App::new()
-            .app_data(app_state.clone())
-            .route("/search/debug", web::get().to(search::debug_index))
-        ).await;
+        let app = test::init_service(
+            App::new()
+                .app_data(app_state.clone())
+                .route("/search/debug", web::get().to(search::debug_index)),
+        )
+        .await;
 
-        let req = test::TestRequest::get()
-            .uri("/search/debug")
-            .to_request();
+        let req = test::TestRequest::get().uri("/search/debug").to_request();
 
         let resp = test::call_service(&app, req).await;
         assert!(resp.status() == 200);
+
+        remove_index_from_disk();
     }
 }
+

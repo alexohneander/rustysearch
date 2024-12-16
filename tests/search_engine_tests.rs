@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use rustysearch::search::engine::SearchEngine;
+    use rustysearch::search::engine::{remove_index_from_disk, SearchEngine};
 
     #[test]
     fn test_search_engine() {
@@ -12,6 +12,8 @@ mod tests {
         assert_eq!(result.len(), 1);
         assert_eq!(search_engine.posts().len(), 1);
         assert_eq!(search_engine.number_of_documents(), 1);
+
+        remove_index_from_disk();
     }
 
     #[test]
@@ -25,5 +27,8 @@ mod tests {
 
         assert_eq!(search_engine.posts().len(), 2);
         assert_eq!(search_engine.number_of_documents(), 2);
+
+        remove_index_from_disk();
     }
 }
+
