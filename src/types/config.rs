@@ -16,7 +16,13 @@ impl Config {
         }
     }
 
-    pub(crate) fn load_from_file(config_path: &str) -> Result<Config, Error> {
+    pub(crate) fn load_from_file(_config_path: &str) -> Result<Config, Error> {
         unimplemented!();
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self::new()
     }
 }

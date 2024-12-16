@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
     let args = Args::parse();
 
     // Initialize logger
-    if args.log_level != "" {
+    if !args.log_level.is_empty() {
         env_logger::init_from_env(Env::default().default_filter_or(args.log_level));
     } else {
         env_logger::init_from_env(Env::default().default_filter_or("info"));
