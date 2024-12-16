@@ -248,6 +248,7 @@ impl SearchEngine {
 
         let mut file = BufWriter::new(File::create("/tmp/search.db").unwrap());
         serialize_into(&mut file, &data).unwrap();
+        log::debug!("Wrote Index as BTreeMap to Disk");
     }
 
     /// Prints the current state of the search engine's index and document collection for debugging purposes.
@@ -259,11 +260,15 @@ impl SearchEngine {
 
 fn get_index_from_disk() -> SavedIndex {
     let file = File::open("/tmp/search.db");
-    let mut data = SavedIndex{ documents_btree_map: BTreeMap::new(), index_btree_map: BTreeMap::new()};
+    let mut data = SavedIndex {
+        documents_btree_map: BTreeMap::new(),
+        index_btree_map: BTreeMap::new(),
+    };
 
     if file.is_ok() {
         let reader = BufReader::new(file.unwrap());
         data = deserialize_from(reader).unwrap();
+        log::debug!("Got BTreeMap Index from Disk");
     }
 
     data
