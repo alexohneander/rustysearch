@@ -1,15 +1,10 @@
 use bincode::{deserialize_from, serialize_into};
-use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::f64;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
-#[derive(Serialize, Deserialize)]
-struct SavedIndex {
-    index_btree_map: BTreeMap<String, HashMap<String, i32>>,
-    documents_btree_map: BTreeMap<String, String>,
-}
+use crate::types::index;
 
 fn update_url_scores(old: &mut HashMap<String, f64>, new: &HashMap<String, f64>) {
     for (url, score) in new {
@@ -203,8 +198,6 @@ impl SearchEngine {
                 .entry(url.to_string())
                 .or_insert(0) += 1;
         }
-
-        // TODO: After updating the index
         self.write_index_to_disk();
     }
 
@@ -241,7 +234,7 @@ impl SearchEngine {
         let btree_index: BTreeMap<_, _> = index_hash_map.into_iter().collect();
         let btree_documents: BTreeMap<_, _> = documents_hash_map.into_iter().collect();
 
-        let data = SavedIndex {
+        let data = index::SavedIndex {
             index_btree_map: btree_index,
             documents_btree_map: btree_documents,
         };
@@ -258,9 +251,9 @@ impl SearchEngine {
     }
 }
 
-fn get_index_from_disk() -> SavedIndex {
+fn get_index_from_disk() -> index::SavedIndex {
     let file = File::open("/tmp/search.db");
-    let mut data = SavedIndex {
+    let mut data = index::SavedIndex {
         documents_btree_map: BTreeMap::new(),
         index_btree_map: BTreeMap::new(),
     };

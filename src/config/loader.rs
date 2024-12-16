@@ -11,6 +11,5 @@ pub fn load_config(config_path: &str) -> Config {
             eprintln!("Error loading config file: {}", e);
         }
     }
-
-    return settings;
+    settings
 }
