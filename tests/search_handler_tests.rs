@@ -91,6 +91,30 @@ mod tests {
     }
 
     #[actix_web::test]
+    async fn test_search_without_query() {
+        let mut search_engine = SearchEngine::new(1.5, 0.75);
+        search_engine.index("https://example.com", "This is an example document");
+
+        let app_state = web::Data::new(AppStateWithSearchEngine {
+            search_engine: Mutex::new(search_engine.clone()),
+        });
+
+        let app = test::init_service(
+            App::new()
+                .app_data(app_state.clone())
+                .route("/search", web::get().to(search::search)),
+        )
+        .await;
+
+        let req = test::TestRequest::get().uri("/search?query=").to_request();
+
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status() == 400);
+
+        remove_index_from_disk();
+    }
+
+    #[actix_web::test]
     async fn test_debug_index() {
         let search_engine = SearchEngine::new(1.5, 0.75);
 
