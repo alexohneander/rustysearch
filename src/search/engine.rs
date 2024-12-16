@@ -1,8 +1,8 @@
 use bincode::{deserialize_from, serialize_into};
 use std::collections::{BTreeMap, HashMap};
-use std::f64;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
+use std::{f64, fs};
 
 use crate::types::index;
 
@@ -265,4 +265,11 @@ fn get_index_from_disk() -> index::SavedIndex {
     }
 
     data
+}
+
+pub fn remove_index_from_disk() {
+    let result = fs::remove_file("/tmp/search.db");
+    if result.is_ok() {
+        log::info!("Index was deleted");
+    }
 }
