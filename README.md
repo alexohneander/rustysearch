@@ -9,7 +9,7 @@ This project is a learning exercise and is not intended for production use.
 ## Todo
 
 - [x] Store index to Disk
-- [] Save multiple indecies
+- [ ] Save multiple indecies
 
 ### Features
 
