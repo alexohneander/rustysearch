@@ -27,17 +27,19 @@ cargo run
 ```
 
 **Add Document to Index:**
+
 ```bash
 curl --request POST \
   --url http://localhost:4000/search/index/document \
   --header 'Content-Type: application/json' \
   --data '{
-  "url": "https://de.wikipedia.org/wiki/Rust_(Programmiersprache)",
-  "content": "Rust ist eine Multiparadigmen-Systemprogrammiersprache, die von der Open-Source-Community entwickelt wurde und unter anderem von Mozilla Research gesponsert wird.[12] Sie wurde mit dem Ziel entwickelt, sicher, nebenläufig und praxisnah zu sein.[13] Sicherheit bezieht sich dabei insbesondere auf die Vermeidung von Programmfehlern, die zu Speicherzugriffsfehlern oder Pufferüberläufen und damit unter Umständen auch zu Sicherheitslücken führen, vor allem auch in nebenläufigen Prozessen. Im Gegensatz zu anderen Programmiersprachen mit automatischer Speicherverwaltung verwendet Rust hierfür keine Garbage Collection, sondern ein besonderes Typsystem. Dessen Typsicherheit wurde formal bewiesen."
-}'
+    "url": "https://de.wikipedia.org/wiki/Rust_(Programmiersprache)",
+    "content": "Rust ist eine Multiparadigmen-Systemprogrammiersprache, die von der Open-Source-Community entwickelt wurde und unter anderem von Mozilla Research gesponsert wird.[12] Sie wurde mit dem Ziel entwickelt, sicher, nebenläufig und praxisnah zu sein.[13] Sicherheit bezieht sich dabei insbesondere auf die Vermeidung von Programmfehlern, die zu Speicherzugriffsfehlern oder Pufferüberläufen und damit unter Umständen auch zu Sicherheitslücken führen, vor allem auch in nebenläufigen Prozessen. Im Gegensatz zu anderen Programmiersprachen mit automatischer Speicherverwaltung verwendet Rust hierfür keine Garbage Collection, sondern ein besonderes Typsystem. Dessen Typsicherheit wurde formal bewiesen."
+  }'
 ```
 
 **Search Query:**
+
 ```bash
 curl --request GET \
   --url 'http://localhost:4000/search?query=Rust'
