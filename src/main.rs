@@ -51,7 +51,7 @@ async fn main() -> std::io::Result<()> {
             .route("/search", web::get().to(search::search))
             .route("/search/debug", web::get().to(search::debug_index))
     })
-    .bind(("127.0.0.1", 4000))?
+    .bind(("0.0.0.0", 4000))?
     .run()
     .await
 }
