@@ -3,12 +3,11 @@ mod tests {
     use rustysearch::types::config::Config;
 
     #[test]
-    fn test_search_engine() {
+    fn test_create_new_config() {
         let config = Config::default();
         let config_two = Config::new();
-        println!("{:?}", config);
-        println!("{:?}", config_two);
 
-        // assert_eq!(config.http, 1);
+        assert_eq!(config.http_addr, "127.0.0.1:4000");
+        assert_eq!(config_two.http_addr, "127.0.0.1:4000");
     }
 }

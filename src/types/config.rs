@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    http_addr: String,
-    database_path: String,
+    pub http_addr: String,
+    pub database_path: String,
 }
 
 impl Config {
@@ -16,8 +16,8 @@ impl Config {
         }
     }
 
-    pub(crate) fn load_from_file(_config_path: &str) -> Result<Config, Error> {
-        unimplemented!();
+    pub fn load_from_file(_config_path: &str) -> Result<Config, Error> {
+        todo!();
     }
 }
 
